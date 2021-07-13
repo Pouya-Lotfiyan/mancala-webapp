@@ -5,18 +5,20 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "player")
-public class Player {
+@Table(name = "board")
+public class Board {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
-    @Column(name = "username")
-    private String username;
-
+    @OneToOne
+    @JoinColumn(name = "game_id")
+    private Game game;
 
     @UpdateTimestamp
     @Column(name = "updated_at")
@@ -26,16 +28,10 @@ public class Player {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "board")
+    private List<Pit> pits;
 
 
-    public Player(){
-
-    }
-
-    public Player(long id, String username) {
-        this.id = id;
-        this.username = username;
-    }
 
     public long getId() {
         return id;
@@ -45,12 +41,12 @@ public class Player {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public Game getGame() {
+        return game;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     public LocalDateTime getUpdatdAt() {
@@ -69,4 +65,11 @@ public class Player {
         this.createdAt = createdAt;
     }
 
+    public List<Pit> getPits() {
+        return pits;
+    }
+
+    public void setPits(List<Pit> pits) {
+        this.pits = pits;
+    }
 }
