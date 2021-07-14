@@ -22,6 +22,12 @@ public class Game {
     @JoinColumn(name = "second_player_id")
     private Player secondPlayer;
 
+
+    @ManyToOne
+    @JoinColumn(name = "responsible_player")
+    private Player responsiblePlayer;
+
+
     @OneToOne(mappedBy = "game", cascade = CascadeType.ALL)
     private Board board;
 
@@ -79,6 +85,14 @@ public class Game {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public Player getResponsiblePlayer() {
+        return responsiblePlayer;
+    }
+
+    public void setResponsiblePlayer(Player responsiblePlayer) {
+        this.responsiblePlayer = responsiblePlayer;
     }
 
     public GameStatus getStatus() {
