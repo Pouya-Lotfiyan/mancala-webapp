@@ -1,5 +1,6 @@
 package com.pouya.mancalaapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -20,7 +21,7 @@ public class Pit {
     @Column(name = "current_stones")
     private int currentStones;
 
-
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "board_id")
     private Board board;
@@ -31,11 +32,23 @@ public class Pit {
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    private LocalDateTime updatdAt;
+    private LocalDateTime updatedAt;
 
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+
+    public Pit() {
+    }
+
+    public Pit(int currentStones, Player owner, Board board, boolean isBigPick){
+        this.currentStones = currentStones;
+        this.owner = owner;
+        this.isBigPick = isBigPick;
+        this.board = board;
+    }
+
 
     public long getId() {
         return id;
@@ -69,12 +82,12 @@ public class Pit {
         this.owner = owner;
     }
 
-    public LocalDateTime getUpdatdAt() {
-        return updatdAt;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdatdAt(LocalDateTime updatdAt) {
-        this.updatdAt = updatdAt;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public LocalDateTime getCreatedAt() {

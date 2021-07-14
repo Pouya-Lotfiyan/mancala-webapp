@@ -1,5 +1,6 @@
 package com.pouya.mancalaapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,6 +17,7 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "game_id")
     private Game game;
@@ -28,7 +30,7 @@ public class Board {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<Pit> pits;
 
 
