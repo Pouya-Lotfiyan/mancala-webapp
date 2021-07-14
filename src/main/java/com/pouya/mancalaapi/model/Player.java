@@ -37,6 +37,10 @@ public class Player {
         this.username = username;
     }
 
+    public Player(String username){
+        this.setUsername(username);
+    }
+
     public long getId() {
         return id;
     }
