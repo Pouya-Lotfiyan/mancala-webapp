@@ -2,12 +2,13 @@ package com.pouya.mancalaapi.dto.response;
 
 import com.pouya.mancalaapi.enums.GameStatus;
 import com.pouya.mancalaapi.model.Game;
+import com.pouya.mancalaapi.model.Player;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GameCreationResponseDto {
+public class GameResponseDto {
 
     private long gameId;
 
@@ -21,7 +22,9 @@ public class GameCreationResponseDto {
 
     private GameStatus status;
 
-    public GameCreationResponseDto(Game game){
+    private Player nexTurnPlayer;
+
+    public GameResponseDto(Game game){
         this.createdAt = game.getCreatedAt();
         this.gameId = game.getId();
         this.status = game.getStatus();
@@ -38,6 +41,11 @@ public class GameCreationResponseDto {
                 .map(PitResponseDto::new)
                 .collect(Collectors.toList());
         this.secondPlayer = new PlayerGameResponseDto(game.getSecondPlayer(), secondPlayerPits);
+
+        this.nexTurnPlayer = game.getResponsiblePlayer();
+    }
+
+    public GameResponseDto(){
     }
 
     public long getGameId() {
@@ -86,5 +94,13 @@ public class GameCreationResponseDto {
 
     public void setBordId(long bordId) {
         this.bordId = bordId;
+    }
+
+    public Player getNexTurnPlayer() {
+        return nexTurnPlayer;
+    }
+
+    public void setNexTurnPlayer(Player nexTurnPlayer) {
+        this.nexTurnPlayer = nexTurnPlayer;
     }
 }
