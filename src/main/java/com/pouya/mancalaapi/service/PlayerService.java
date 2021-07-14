@@ -2,6 +2,7 @@ package com.pouya.mancalaapi.service;
 
 import com.pouya.mancalaapi.model.Player;
 import com.pouya.mancalaapi.repository.PlayerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -14,7 +15,7 @@ public class PlayerService {
 
     private PlayerRepository playerRepository;
 
-
+    @Autowired
     public PlayerService(PlayerRepository playerRepository){
         this.playerRepository = playerRepository;
     }

@@ -2,6 +2,7 @@ package com.pouya.mancalaapi.controller;
 
 import com.pouya.mancalaapi.model.Player;
 import com.pouya.mancalaapi.service.PlayerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,11 +14,12 @@ public class PlayerController {
 
     private PlayerService playerService;
 
+    @Autowired
     public PlayerController(PlayerService playerService){
         this.playerService = playerService;
     }
 
-
+    @GetMapping
     public List<Player> get(){
         return this.playerService.getAll();
     }
