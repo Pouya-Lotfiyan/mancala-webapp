@@ -6,6 +6,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "pit")
@@ -38,15 +39,18 @@ public class Pit {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "index")
+    private int index;
 
     public Pit() {
     }
 
-    public Pit(int currentStones, Player owner, Board board, boolean isBigPick){
+    public Pit(int currentStones, Player owner, Board board,int index , boolean isBigPick){
         this.currentStones = currentStones;
         this.owner = owner;
         this.isBigPick = isBigPick;
         this.board = board;
+        this.index = index;
     }
 
 
@@ -107,4 +111,24 @@ public class Pit {
     }
 
 
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pit pit = (Pit) o;
+        return id == pit.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
