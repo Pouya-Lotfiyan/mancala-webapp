@@ -27,10 +27,10 @@ public class PlayerController {
 
     @GetMapping("/{id}")
     public Player get(@PathVariable("id") long id){
-        return null;
+        return this.playerService.getByIdOrThrowException(id);
     }
 
-    @PostMapping()
+    @PostMapping
     public Player postPlayer(@RequestBody Player player){
         return this.playerService.insertOne(player);
     }
