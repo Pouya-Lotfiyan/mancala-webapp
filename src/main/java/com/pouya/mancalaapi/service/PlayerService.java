@@ -5,10 +5,10 @@ import com.pouya.mancalaapi.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlayerService {
@@ -33,4 +33,18 @@ public class PlayerService {
     public List<Player> getAll() {
         return this.playerRepository.findAll();
     }
+
+    public Player getByIdOrThrowException(long id) {
+
+        Optional<Player> optionalPlayer = this.playerRepository.findById(id);
+        if(optionalPlayer.isPresent()){
+            return optionalPlayer.get();
+        }
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "player with id:["+id+"] dose not exists.");
+
+    }
+
+
+
 }
