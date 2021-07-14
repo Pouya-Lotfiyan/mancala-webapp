@@ -41,7 +41,7 @@ public class PlayerService {
             return optionalPlayer.get();
         }
 
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "player with id:["+id+"] dose not exists.");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "player with id:["+id+"] does not exists.");
 
     }
 
