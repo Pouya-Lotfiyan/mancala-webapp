@@ -82,11 +82,8 @@ public class BoardService {
         long skipIndex = pit.getIndex();
         boolean BREAK = true;
         boolean  CONTINUE = false;
-
         while (pickedStones.get() > 0){
-            pits.stream()
-                    .skip(skipIndex)
-                    .filter( each -> {
+            pits.stream().skip(skipIndex).filter( each -> {
                             if(!each.getOwner().equals(player) && each.isBigPick()) return CONTINUE;
                             if(pickedStones.get() == 1){
                                 handleLastOneMove(each, pits, gameResponseDto, player);
@@ -96,15 +93,13 @@ public class BoardService {
                             each.setCurrentStones(each.getCurrentStones() + 1);
                             pickedStones.getAndDecrement();
                             return CONTINUE;
-                    })
-                    .findFirst();
+                    }).findFirst();
 
             skipIndex = 0;
         }
-
         updatePits(pits);
+        board.setPits(pits);
         gameResponseDto.setStatus(checkGameStatus(pits));
-        gameResponseDto.setBordId(board.getId());
         return gameResponseDto;
     }
 
@@ -117,7 +112,7 @@ public class BoardService {
         }
     }
 
-    private void updatePits(List<Pit> pits){
+    void updatePits(List<Pit> pits){
         pits.stream().forEach(pit -> {
             this.pitRepository.update(pit.getId(), pit.getCurrentStones());
         });
@@ -127,12 +122,14 @@ public class BoardService {
         if(pit.isBigPick() && pit.getOwner().equals(player)){
             gameResponseDto.setNexTurnPlayer(player);
             pit.setCurrentStones(pit.getCurrentStones() + 1);
+            return;
         }
         if(pit.getCurrentStones() == 0){
             Pit oppositePit = pits.get(pits.size() - pit.getIndex());
             Pit playerBigPit = getBigPitByPlayer(pits, player);
             playerBigPit.setCurrentStones( playerBigPit.getCurrentStones() + oppositePit.getCurrentStones() + 1);
             oppositePit.setCurrentStones(0);
+            return;
         }
         if(pit.getCurrentStones() != 0 ){
             pit.setCurrentStones(pit.getCurrentStones() + 1);
