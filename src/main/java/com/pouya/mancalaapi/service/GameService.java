@@ -68,11 +68,34 @@ public class GameService {
         if(!player.equals(game.getResponsiblePlayer())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "It's not the player's turn");
         }
-
         GameResponseDto gameResponse = this.boardService.move(game.getBoard(), player , pit);
+        updateGameByGameResponseDto(game, gameResponse);
+        return new GameResponseDto(game);
+    }
 
-        // todo checking for update game
+    private void updateGameByGameResponseDto(Game game, GameResponseDto gameResponse) {
+        if(gameResponse.getStatus().equals(GameStatus.DONE)){
+             updateStatus(game.getId(), GameStatus.DONE);
+        }
+        if(gameResponse.getNexTurnPlayer() == null ) {
+            changeResponsiblePlayer(game);
+            updateResponsiblePlayer(game.getId(), game.getResponsiblePlayer());
+        }
+    }
 
-        return gameResponse;
+    public void changeResponsiblePlayer(Game game){
+        if(game.getResponsiblePlayer().equals(game.getFirstPlayer())){
+            game.setResponsiblePlayer(game.getSecondPlayer());
+        }else {
+            game.setResponsiblePlayer(game.getFirstPlayer());
+        }
+    }
+
+     void updateResponsiblePlayer(long id, Player player){
+        this.gameRepository.updateResponsiblePlayer(id, player);
+    }
+
+     void updateStatus(long id, GameStatus status) {
+        this.gameRepository.updateStatus(id, status);
     }
 }
