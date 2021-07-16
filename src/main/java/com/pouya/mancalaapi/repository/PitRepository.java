@@ -17,5 +17,5 @@ public interface PitRepository extends JpaRepository<Pit, Long> {
     @Transactional
     @Modifying
     @Query("UPDATE Pit p SET p.currentStones = :currentStones WHERE p.id = :id")
-    void update(@Param("id") long id, @Param("currentStones") int currentStones);
+    void updatePitsCurrentStones(@Param("id") long id, @Param("currentStones") int currentStones);
 }

@@ -16,8 +16,8 @@ public interface GameRepository  extends JpaRepository<Game, Long> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE Game  g SET g.status = :status WHERE g.id = :id")
-    void updateStatus(@Param("id") long gameId, @Param("status") GameStatus status);
+    @Query("UPDATE Game  g SET g.status = :status, g.winner = :winner WHERE g.id = :id")
+    void updateWinnerAndStatus(@Param("id") long gameId,@Param("winner") Player winner, @Param("status") GameStatus status);
 
     @Transactional
     @Modifying
