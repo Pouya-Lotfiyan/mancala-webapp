@@ -12,26 +12,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.GeneratedValue;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class BoardService {
 
 
-    private PitRepository pitRepository;
+    private final PitRepository pitRepository;
 
     @Autowired
     public BoardService(PitRepository pitRepository){
         this.pitRepository = pitRepository;
     }
 
-
-
-    public Board getBoard(Game game){
+    public Board createBoard(Game game){
         if(game == null){
             throw  new ResponseStatusException(HttpStatus.BAD_REQUEST, "board can not initial because game is null");
         }
@@ -60,31 +56,28 @@ public class BoardService {
         return this.pitRepository.findByBoardOrderByIndex(board);
     }
 
-    public Pit getPitByBoardAndId(Board board, long id ){
+    public Pit getPitByIdOrThrowException(long id ){
         Optional<Pit> optionalPit = this.pitRepository.findById(id);
         if(!optionalPit.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "pit with id:["+id+"] does not exists.");
         }
-        Pit pit = optionalPit.get();
-        if(!pit.getBoard().equals(board)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "pit doesn't belong to this board");
-        }
-        return pit;
+        return optionalPit.get();
     }
 
 
-    public GameResponseDto move(Board board, Player player, Pit pit) {
-        pit = getPitByBoardAndId(board, pit.getId());
-        validateMove(pit);
+    public GameResponseDto handleMoves(Board board, Player player, Pit pit) {
+        pit = getPitByIdOrThrowException(pit.getId());
+        validateMove(board, pit, player);
         GameResponseDto gameResponseDto = new GameResponseDto();
         List<Pit> pits = getPits(board);
         AtomicInteger pickedStones = new AtomicInteger(pit.getCurrentStones());
+        pit.setCurrentStones(0);
         long skipIndex = pit.getIndex();
-        boolean BREAK = true;
-        boolean  CONTINUE = false;
+
         while (pickedStones.get() > 0){
+            boolean BREAK = true, CONTINUE = false;
             pits.stream().skip(skipIndex).filter( each -> {
-                            if(!each.getOwner().equals(player) && each.isBigPick()) return CONTINUE;
+                            if(!each.getOwner().equals(player) && each.isMancalaPit()) return CONTINUE;
                             if(pickedStones.get() == 1){
                                 handleLastOneMove(each, pits, gameResponseDto, player);
                                 pickedStones.getAndDecrement();
@@ -97,56 +90,78 @@ public class BoardService {
 
             skipIndex = 0;
         }
-        updatePits(pits);
+        updatePitsCurrentStones(pits);
         board.setPits(pits);
-        gameResponseDto.setStatus(checkGameStatus(pits));
+        GameStatus status = getGameStatus(pits);
+        gameResponseDto.setStatus(status);
+        if(status.equals(GameStatus.DONE)){
+            gameResponseDto.setWinner(determineWinner(pits));
+        }
         return gameResponseDto;
     }
 
-    private GameStatus checkGameStatus(List<Pit> pits) {
-        Optional<Pit> pit = pits.stream().filter(each -> each.getCurrentStones() != 0 && !each.isBigPick()).findFirst();
-        if(pit.isPresent()){
-            return GameStatus.INPROGRESS;
-        }else {
-            return GameStatus.DONE;
-        }
+    public Player determineWinner(List<Pit> pits) {
+        Optional<Pit> pit = pits.stream().filter(Pit::isMancalaPit).max(Pit::compareTo);
+        return pit.map(Pit::getOwner).orElse(null);
     }
 
-    void updatePits(List<Pit> pits){
+    public GameStatus getGameStatus(List<Pit> pits) {
+        Map<Long, Integer> remainingStones = new HashMap<>();
+        pits.stream()
+                .filter(pit -> !pit.isMancalaPit())
+                .forEach(pit -> {
+                    long playerId = pit.getOwner().getId();
+                    int lastCount = Optional.ofNullable(remainingStones.get(playerId)).orElse(0);
+                    remainingStones.put(pit.getOwner().getId(), lastCount + pit.getCurrentStones());
+                });
+        Optional<Integer> emptyStones = remainingStones.values().stream().filter(stones -> stones == 0).findFirst();
+        if(emptyStones.isPresent()){
+            return GameStatus.DONE;
+        }
+        return GameStatus.INPROGRESS;
+    }
+
+    public void updatePitsCurrentStones(List<Pit> pits){
         pits.stream().forEach(pit -> {
-            this.pitRepository.update(pit.getId(), pit.getCurrentStones());
+            this.pitRepository.updatePitsCurrentStones(pit.getId(), pit.getCurrentStones());
         });
     }
 
-    private void handleLastOneMove(Pit pit, List<Pit> pits, GameResponseDto gameResponseDto, Player player) {
-        if(pit.isBigPick() && pit.getOwner().equals(player)){
+    public void handleLastOneMove(Pit targetPit, List<Pit> pits, GameResponseDto gameResponseDto, Player player) {
+        if(targetPit.isMancalaPit() && targetPit.getOwner().equals(player)){
             gameResponseDto.setNexTurnPlayer(player);
-            pit.setCurrentStones(pit.getCurrentStones() + 1);
+            targetPit.setCurrentStones(targetPit.getCurrentStones() + 1);
             return;
         }
-        if(pit.getCurrentStones() == 0){
-            Pit oppositePit = pits.get(pits.size() - pit.getIndex());
-            Pit playerBigPit = getBigPitByPlayer(pits, player);
+        if(targetPit.getCurrentStones() == 0){
+            Pit oppositePit = pits.get(pits.size() - 1 - targetPit.getIndex() );
+            Pit playerBigPit = getMancalPitPlayer(pits, player);
             playerBigPit.setCurrentStones( playerBigPit.getCurrentStones() + oppositePit.getCurrentStones() + 1);
             oppositePit.setCurrentStones(0);
             return;
         }
-        if(pit.getCurrentStones() != 0 ){
-            pit.setCurrentStones(pit.getCurrentStones() + 1);
+        if(targetPit.getCurrentStones() != 0 ){
+            targetPit.setCurrentStones(targetPit.getCurrentStones() + 1);
         }
     }
 
-    private void validateMove(Pit pit) {
+    public void validateMove(Board board, Pit pit, Player player) {
+        if(!pit.getBoard().equals(board)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "pit doesn't belong to this board");
+        }
+        if (!pit.getOwner().equals(player)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "requested pit does not belong to player");
+        }
+        if(pit.isMancalaPit()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "can not start with a big pit.");
+        }
         if(pit.getCurrentStones() == 0 ){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the Pit with id:["+pit.getId()+"] has no stones.");
         }
-        if(pit.isBigPick()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "can not start with a big pit.");
-        }
     }
 
-    private Pit getBigPitByPlayer(List<Pit> pits, Player player){
-       return pits.stream().filter(pit -> pit.isBigPick() && pit.getOwner().equals(player)).findFirst().get();
+    public Pit getMancalPitPlayer(List<Pit> pits, Player player){
+       return pits.stream().filter(pit -> pit.isMancalaPit() && pit.getOwner().equals(player)).findFirst().get();
     }
 
 
