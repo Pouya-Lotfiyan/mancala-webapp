@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.Optional;
 
 @Service
@@ -42,10 +41,11 @@ public class GameService {
         }
         game.setFirstPlayer(this.playerService.getByIdOrThrowException(firstPlayer.getId()));
         game.setSecondPlayer(this.playerService.getByIdOrThrowException(secondPlayer.getId()));
-        game.setBoard(boardService.getBoard(game));
+        game.setBoard(boardService.createBoard(game));
         game.setStatus(GameStatus.INPROGRESS);
         game.setResponsiblePlayer(game.getFirstPlayer());
-        return  new GameResponseDto(this.gameRepository.save(game));
+        return new GameResponseDto(this.gameRepository.save(game));
+
     }
 
 
@@ -59,7 +59,7 @@ public class GameService {
 
 
 
-    public GameResponseDto move(Pit pit, long gameId, long playerId) {
+    public GameResponseDto handleMove(Pit pit, long gameId, long playerId) {
         Game game = this.getByIdOrThrowException(gameId);
         Player player = this.playerService.getByIdOrThrowException(playerId);
         if(game.getStatus().equals(GameStatus.DONE)){
@@ -68,14 +68,16 @@ public class GameService {
         if(!player.equals(game.getResponsiblePlayer())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "It's not the player's turn");
         }
-        GameResponseDto gameResponse = this.boardService.move(game.getBoard(), player , pit);
+        GameResponseDto gameResponse = this.boardService.handleMoves(game.getBoard(), player , pit);
         updateGameByGameResponseDto(game, gameResponse);
         return new GameResponseDto(game);
     }
 
     private void updateGameByGameResponseDto(Game game, GameResponseDto gameResponse) {
         if(gameResponse.getStatus().equals(GameStatus.DONE)){
-             updateStatus(game.getId(), GameStatus.DONE);
+             game.setStatus(GameStatus.DONE);
+             game.setWinner(gameResponse.getWinner());
+             updateWinnerAndStatus(game.getId(), game.getWinner(), game.getStatus() );
         }
         if(gameResponse.getNexTurnPlayer() == null ) {
             changeResponsiblePlayer(game);
@@ -83,7 +85,7 @@ public class GameService {
         }
     }
 
-    public void changeResponsiblePlayer(Game game){
+     public void changeResponsiblePlayer(Game game){
         if(game.getResponsiblePlayer().equals(game.getFirstPlayer())){
             game.setResponsiblePlayer(game.getSecondPlayer());
         }else {
@@ -91,11 +93,11 @@ public class GameService {
         }
     }
 
-     void updateResponsiblePlayer(long id, Player player){
+     public void updateResponsiblePlayer(long id, Player player){
         this.gameRepository.updateResponsiblePlayer(id, player);
     }
 
-     void updateStatus(long id, GameStatus status) {
-        this.gameRepository.updateStatus(id, status);
+     public void updateWinnerAndStatus(long id, Player winner, GameStatus status) {
+        this.gameRepository.updateWinnerAndStatus(id, winner, status);
     }
 }
