@@ -20,7 +20,7 @@ public class Pit {
     private boolean isBigPick;
 
     @Column(name = "current_stones")
-    private int currentStones;
+        private int currentStones;
 
     @JsonIgnore
     @ManyToOne

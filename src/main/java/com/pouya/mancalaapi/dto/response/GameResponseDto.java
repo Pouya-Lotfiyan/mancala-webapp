@@ -24,6 +24,9 @@ public class GameResponseDto {
 
     private Player nexTurnPlayer;
 
+    private Player winner;
+
+
     public GameResponseDto(Game game){
         this.createdAt = game.getCreatedAt();
         this.gameId = game.getId();
@@ -102,5 +105,13 @@ public class GameResponseDto {
 
     public void setNexTurnPlayer(Player nexTurnPlayer) {
         this.nexTurnPlayer = nexTurnPlayer;
+    }
+
+    public Player getWinner() {
+        return winner;
+    }
+
+    public void setWinner(Player winner) {
+        this.winner = winner;
     }
 }
