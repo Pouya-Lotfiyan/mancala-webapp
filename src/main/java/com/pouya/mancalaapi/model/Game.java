@@ -43,6 +43,10 @@ public class Game {
     @Enumerated(EnumType.STRING)
     private GameStatus status;
 
+    @ManyToOne
+    @JoinColumn(name = "winner")
+    private Player winner;
+
     public long getId() {
         return id;
     }
@@ -105,5 +109,13 @@ public class Game {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Player getWinner() {
+        return winner;
+    }
+
+    public void setWinner(Player winner) {
+        this.winner = winner;
     }
 }
