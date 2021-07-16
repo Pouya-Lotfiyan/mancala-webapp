@@ -1,0 +1,114 @@
+[
+  {
+    "currentStones" : 0,
+    "index": 1,
+    "owner": {
+      "id" : 1
+    },
+    "isMancalaPit": false
+  },
+  {
+    "currentStones" : 0,
+    "index": 2,
+    "owner": {
+      "id" : 1
+    },
+    "isMancalaPit": false
+  },
+  {
+    "currentStones" : 0,
+    "index": 3,
+    "owner": {
+      "id" : 1
+    },
+    "isMancalaPit": false
+  },
+  {
+    "currentStones" : 0,
+    "index": 4,
+    "owner": {
+      "id" : 1
+    },
+    "isMancalaPit": false
+  },
+  {
+    "currentStones" : 0,
+    "index": 5,
+    "owner": {
+      "id" : 1
+    },
+    "isMancalaPit": false
+  },
+  {
+    "currentStones" : 0,
+    "index": 6,
+    "owner": {
+      "id" : 1
+    },
+    "isMancalaPit": false
+  },
+  {
+    "currentStones" : 22,
+    "index": 7,
+    "owner": {
+      "id" : 1
+    },
+    "isMancalaPit": true
+  },
+  {
+    "currentStones" : 2,
+    "index": 8,
+    "owner": {
+      "id" : 2
+    },
+    "isMancalaPit": false
+  },
+  {
+    "currentStones" : 3,
+    "index": 9,
+    "owner": {
+      "id" : 2
+    },
+    "isMancalaPit": false
+  },
+  {
+  "currentStones" : 0,
+  "index": 10,
+    "owner": {
+      "id" : 2
+    },
+  "isMancalaPit": false
+},
+  {
+    "currentStones" : 7,
+    "index": 11,
+    "owner": {
+      "id" : 2
+    },
+    "isMancalaPit": false
+  },
+  {
+    "currentStones" : 0,
+    "index": 12,
+    "owner": {
+      "id" : 2
+    },
+    "isMancalaPit": false
+  },
+  {
+  "currentStones" : 7,
+  "index": 13,
+    "owner": {
+      "id" : 2
+    },
+  "isMancalaPit": false
+},
+  {
+  "currentStones" : 18,
+  "index": 14,
+    "owner": {
+      "id" : 2
+    },
+  "isMancalaPit": true
+  }
+]
