@@ -1,6 +1,7 @@
 package com.pouya.mancalaapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -10,14 +11,15 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "pit")
-public class Pit {
+public class Pit implements Comparable<Pit> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
-    @Column(name = "is_big_pick")
-    private boolean isBigPick;
+    @Column(name = "is_mancala_pit")
+    @JsonProperty("isMancalaPit")
+    private boolean isMancalaPit;
 
     @Column(name = "current_stones")
         private int currentStones;
@@ -45,10 +47,10 @@ public class Pit {
     public Pit() {
     }
 
-    public Pit(int currentStones, Player owner, Board board,int index , boolean isBigPick){
+    public Pit(int currentStones, Player owner, Board board,int index , boolean isMancalaPit){
         this.currentStones = currentStones;
         this.owner = owner;
-        this.isBigPick = isBigPick;
+        this.isMancalaPit = isMancalaPit;
         this.board = board;
         this.index = index;
     }
@@ -62,12 +64,12 @@ public class Pit {
         this.id = id;
     }
 
-    public boolean isBigPick() {
-        return isBigPick;
+    public boolean isMancalaPit() {
+        return isMancalaPit;
     }
 
-    public void setBigPick(boolean bigPick) {
-        isBigPick = bigPick;
+    public void setMancalaPit(boolean mancalaPit) {
+        isMancalaPit = mancalaPit;
     }
 
     public int getCurrentStones() {
@@ -130,5 +132,13 @@ public class Pit {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+
+    @Override
+    public int compareTo(Pit pit) {
+        if(this.currentStones > pit.getCurrentStones()) return 1;
+        if(this.currentStones < pit.getCurrentStones()) return -1;
+        return 0;
     }
 }
