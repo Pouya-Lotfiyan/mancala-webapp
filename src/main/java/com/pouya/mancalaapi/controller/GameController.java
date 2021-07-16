@@ -30,7 +30,7 @@ public class GameController {
                                    @PathVariable("playerId") long playerId,
                                    @PathVariable("gameId") long gameId
                         ){
-        return this.gameService.move(pit, gameId, playerId);
+        return this.gameService.handleMove(pit, gameId, playerId);
     }
 
 
