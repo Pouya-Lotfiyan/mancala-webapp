@@ -28,7 +28,7 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo()).select().paths(any())
                 .paths(PathSelectors.ant("/api/**"))
                 .build()
-                .directModelSubstitute(LocalDateTime.class, java.sql.Date.class);
+                .directModelSubstitute(LocalDateTime.class, java.util.Date.class);
 
     }
 
