@@ -37,7 +37,7 @@ public class SwaggerConfig {
     }
 
     private ApiInfo apiInfo() {
-        return new ApiInfoBuilder().title("Smart Parking")
+        return new ApiInfoBuilder().title("Mancala Api")
                 .description("mancala api was built for bluebank interview")
                 .termsOfServiceUrl("http://mancalaapi.com")
                 .licenseUrl("mancala@gmail.com").version("1.0.0").build();
