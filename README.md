@@ -1,5 +1,5 @@
 # mancala-webapp
-This a test application created with spring boot.
+This a game web application created with spring boot.
 
 ## Getting Started
 
