@@ -1,5 +1,6 @@
 package com.pouya.mancalaapi.unit.service;
 
+import com.pouya.mancalaapi.dto.request.CreationPlayerResponseDto;
 import com.pouya.mancalaapi.model.Player;
 import com.pouya.mancalaapi.service.PlayerService;
 import org.junit.jupiter.api.Assertions;
@@ -19,9 +20,8 @@ public class PlayerServiceTest {
 
     @Test
     void createPlayer(){
-        Player player = new Player();
+        CreationPlayerResponseDto player = new CreationPlayerResponseDto("gholi");
         // TODO generate username by faker
-        player.setUsername("gholi");
         Player savedPlayer = playerService.insertOne(player);
         Assertions.assertNotNull(savedPlayer);
 

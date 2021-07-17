@@ -1,5 +1,6 @@
 package com.pouya.mancalaapi.service;
 
+import com.pouya.mancalaapi.dto.request.CreationPlayerResponseDto;
 import com.pouya.mancalaapi.model.Player;
 import com.pouya.mancalaapi.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +22,13 @@ public class PlayerService {
     }
 
 
-    public Player insertOne(Player player) {
-        Player foundPlayer = this.playerRepository.findByUsername(player.getUsername());
+    public Player insertOne(CreationPlayerResponseDto playerDto) {
+        Player foundPlayer = this.playerRepository.findByUsername(playerDto.getUsername());
         if(foundPlayer != null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "player with username["+player.getUsername()+"] already exists");
+                    "player with username["+playerDto.getUsername()+"] already exists");
         }
-        return playerRepository.save(player);
+        return playerRepository.save(new Player(playerDto.getUsername()));
     }
 
     public List<Player> getAll() {

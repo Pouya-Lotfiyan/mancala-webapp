@@ -1,5 +1,6 @@
 package com.pouya.mancalaapi.service;
 
+import com.pouya.mancalaapi.dto.request.StartGameRequestDto;
 import com.pouya.mancalaapi.dto.response.GameResponseDto;
 import com.pouya.mancalaapi.enums.GameStatus;
 import com.pouya.mancalaapi.model.Game;
@@ -30,15 +31,16 @@ public class GameService {
     }
 
 
-    public GameResponseDto startGame(Game game) {
-        Player firstPlayer = game.getFirstPlayer();
-        Player secondPlayer = game.getSecondPlayer();
+    public GameResponseDto startGame(StartGameRequestDto gameRequestDto) {
+        Player firstPlayer = gameRequestDto.getFirstPlayer();
+        Player secondPlayer = gameRequestDto.getSecondPlayer();
         if(firstPlayer == null || secondPlayer == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "game must have to player");
         }
         if(firstPlayer.equals(secondPlayer)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "game should have two player at least.");
         }
+        Game game = new Game();
         game.setFirstPlayer(this.playerService.getByIdOrThrowException(firstPlayer.getId()));
         game.setSecondPlayer(this.playerService.getByIdOrThrowException(secondPlayer.getId()));
         game.setBoard(boardService.createBoard(game));

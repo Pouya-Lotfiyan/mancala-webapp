@@ -2,6 +2,7 @@ package com.pouya.mancalaapi.unit.web;
 
 
 import com.pouya.mancalaapi.controller.PlayerController;
+import com.pouya.mancalaapi.dto.request.CreationPlayerResponseDto;
 import com.pouya.mancalaapi.model.Player;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -24,20 +25,20 @@ class PlayerControllerTest  extends BaseWebTest {
 
     @Test
      void getAllShouldReturnSuccessStatus() throws Exception{
-       mockMvc.perform(get("/player")).andExpect(status().isOk());
+       mockMvc.perform(get("/api/player")).andExpect(status().isOk());
     }
 
     @Test
      void getOneByIdShouldSuccessStatus() throws Exception{
-        mockMvc.perform(get("/player/1")).andExpect(status().isOk());
+        mockMvc.perform(get("/api/player/1")).andExpect(status().isOk());
 
     }
 
     @Test
     void postPlayerShouldReturnSuccess() throws Exception {
-        Player player = new Player(1, "test");
-        when(playerService.insertOne(any(Player.class))).thenReturn(player);
-        MockHttpServletRequestBuilder requestBuilder = post("/player")
+        CreationPlayerResponseDto player = new CreationPlayerResponseDto( "test");
+        when(playerService.insertOne(any(CreationPlayerResponseDto.class))).thenReturn(new Player(1, player.getUsername()));
+        MockHttpServletRequestBuilder requestBuilder = post("/api/player")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(player));
         mockMvc.perform(requestBuilder)
@@ -45,10 +46,10 @@ class PlayerControllerTest  extends BaseWebTest {
     }
     @Test
     void postPlayerShouldReturnPlayer() throws Exception {
-        Player player = new Player("test");
-        when(playerService.insertOne(any(Player.class))).thenReturn(new Player(1, player.getUsername()));
+        CreationPlayerResponseDto player = new CreationPlayerResponseDto("test");
+        when(playerService.insertOne(any(CreationPlayerResponseDto.class))).thenReturn(new Player(1, player.getUsername()));
 
-        MockHttpServletRequestBuilder requestBuilder = post("/player")
+        MockHttpServletRequestBuilder requestBuilder = post("/api/player")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(player));
 
